@@ -1,0 +1,1 @@
+import mysql.connectormydb = mysql.connector.connect(    host='localhost',    user='artorias',    passwd='mysql',    database="pythonConnect")mycursor = mydb.cursor()sql = "SELECT * FROM customers WHERE address = %s"adr = ("Yellow Garden 2", )mycursor.execute(sql, adr)myresult = mycursor.fetchall()for x in myresult:    print(x)
