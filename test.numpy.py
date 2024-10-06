@@ -111,4 +111,18 @@ print(a+b)
 print(a-b)
 print(a*b)
 print(a/b)
-#эээээ
+############################################### 
+
+# a = np.array([0, np.pi/2, np.pi])
+# print(a)
+# print(np.sin(a))
+# print(np.cos(a))
+# print(np.sqrt(a))
+# print(np.exp(a))
+# print(np.log(a))
+# print(np.sum(a))
+# print(np.std(a))
+
+a = np.array([[1, 4, 2], [3, 4, 6], [0, -1, 5]])
+print(np.sort(a, axis=None)) # np.sort(a, axis=None) сортирует все элементы массива и возвращает одномерный массив с отсортированными значениями.
+print(np.sort(a, axis=1)) # np.sort(a, axis=1) сортирует элементы по строкам. То есть для каждой строки массива будет выполнена сортировка её элементов.
