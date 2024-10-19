@@ -190,3 +190,90 @@ movies = [
 movie_collection.insert_many(movies)
 
 print("Данные успешно добавлены!")
+
+# проверка
+all_movies = movie_collection.find()
+for movie in all_movies:
+    print(movie)
+
+# запросы
+print("check is done")
+# 1) Найти и вывести все фильмы, снятые Кристофером Ноланом
+
+nolan_movies =movie_collection.find({"director": "Christopher Nolan"})
+for movie in nolan_movies:
+    print(f"Фильмы, снятые Кристофером Ноланом: {movie}")
+    
+# 2) Найти и вывести все фильмы, выпущенные между 2000 и 2020 годами, у которых рейтинг на Rotten Tomatoes превышает 80%
+
+#　В MongoDB операторы $gte и $lte используются для выполнения сравнений в запросах. Эти операторы позволяют фильтровать документы на основе значений полей
+# $gte (greater than or equal, больше или равно)
+# $lte (less than or equal, меньше или равно)
+movies_between_200_2020 = movie_collection.find({
+    "year": {"$gte": 2000, "$lte": 2020},
+    "ratings.rottenTomatoes": {"$gt": 80}
+})
+for movie in movies_between_200_2020:
+    print(f"Фильмы, выпущенные между 2000 и 2020 годами, с рейтингом больше 80% на Rotten Tomatoes {movie}")
+    
+# 3) Найти и вывести все фильмы с жанром "Action", отсортированные по рейтингу IMDb в убывающем порядке
+action_movies = movie_collection.find({"genres": "Action"}).sort("ratings.imdb", -1)
+for movies in action_movies:
+    print(f"Экшн фильмы, отсортированные по рейтингу IMDB в убывающем порядке {movie}")
+    
+# 4) Рассчитать и вывести средний доход от всех фильмов, снятых Квентином Тарантино
+# возвращение только поля grossWorldwide из поддокумента boxOffice
+tarantino_movies = movie_collection.find({"director": "Quentin Tarantino"}, {"boxOffice.grossWorldwide": 1})
+total_gross = 0 # накопление общего дохода от фильмов
+count = 0 # количество фильмов
+for movie in tarantino_movies:
+    total_gross += movie["boxOffice"]["grossWorldwide"] # добавляется доход
+    count += 1 # добавляется количество фильмов
+if count > 0:
+    average_gross = total_gross / count
+    print(f"Средний доход от фильмов Тарантино: {average_gross}")
+    
+# 5) Обновить все фильмы с рейтингом IMDb ниже 6.0, добавив "С низким рейтингом" в поле "Жанры"
+
+movie_collection.update_many(
+    {"rating.imdb": {"$lt": 6.0}},
+    {"$addToSet": {"genres": "С низким рейтингом"}}
+)
+all_movies = movie_collection.find()
+for movie in all_movies:
+    print(movie)
+
+# 6) Вывести список из 5 лучших фильмов по кассовым сборам по всему миру
+
+top_5_grossing_movies = movie_collection.find().sort("boxOffice.grossWorldwide", -1).limit(5)
+for movie in top_5_grossing_movies:
+    print(f"5 лучших фильмов по кассовым сборам по всему миру: {movie}")
+    
+# 7) Найти фильмы, в актерском составе которых есть как Леонардо Ди Каприо, так и Брэд Питт
+
+
+# Поиск фильмов с Леонардо Ди Каприо
+leo_movies = movie_collection.find({"cast.actor": "Leonardo DiCaprio"})
+print("Фильмы с Леонардо Ди Каприо:")
+for movie in leo_movies:
+    print(movie)
+
+# Поиск фильмов с Брэдом Питтом
+brad_movies = movie_collection.find({"cast.actor": "Brad Pitt"})
+print("\nФильмы с Брэдом Питтом:")
+for movie in brad_movies:
+    print(movie)
+
+# Поиск фильмов с обоими актерами
+leo_brad_movies = list(movie_collection.find({
+    "cast.actor": {"$all": ["Leonardo DiCaprio", "Brad Pitt"]}
+}))
+
+# Проверка, есть ли фильмы с обоими актерами
+if leo_brad_movies:
+    print("\nФильмы с Леонардо Ди Каприо и Брэдом Питтом:")
+    for movie in leo_brad_movies:
+        print(movie)
+else:
+    print("\nФильмов с Леонардо Ди Каприо и Брэдом Питтом не найдено.")
+
